@@ -11,6 +11,7 @@ apps/api/data/
 node_modules/
 apps/web/dist/
 apps/web/dev-dist/
+*.tsbuildinfo
 *.local
 
 # Env
