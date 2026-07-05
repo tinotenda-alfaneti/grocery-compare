@@ -1,0 +1,63 @@
+# replicaCount MUST stay 1: grocery-compare uses embedded SQLite on a single
+# ReadWriteOnce PVC (single-writer, node-local storage). See docs/architecture.md.
+replicaCount: 1
+
+image:
+  repository: tinorodney/grocery-compare
+  tag: v0.0.1
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  hosts:
+    - host: grocery.atarnet.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+# Never enable: see replicaCount comment above and templates/hpa.yaml, which
+# hard-fails the chart if this is set to true.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+
+env:
+  APP_ENV: production
+  HTTP_PORT: "8080"
+  DB_PATH: /data/grocery.db
+  WEB_ROOT: /srv/web
+
+# PIN hash now; Phase 3 encrypted retailer session-cookie secrets / internal
+# scrape-auth token later. Set via --set-string secretEnv.KEY=value at deploy time.
+secretEnv: {}
+
+persistence:
+  enabled: true
+  mountPath: /data
+  size: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClass: ""
+  existingClaim: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

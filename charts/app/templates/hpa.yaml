@@ -1,0 +1,3 @@
+{{- if .Values.autoscaling.enabled }}
+{{- fail "autoscaling.enabled must stay false: grocery-compare uses embedded SQLite on a single ReadWriteOnce PVC and cannot run more than one replica. See docs/architecture.md." }}
+{{- end }}

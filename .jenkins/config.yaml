@@ -1,0 +1,13 @@
+app:
+  name: grocery-compare
+  namespace: grocery-compare-ns
+
+image:
+  registry: tinorodney
+
+helm:
+  chartPath: charts/app
+
+kubernetes:
+  kubeconfig: kubeconfigglobal
+  sourceNamespace: test-ns
