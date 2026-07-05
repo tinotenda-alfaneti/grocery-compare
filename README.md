@@ -8,7 +8,7 @@ This is a **Phase 1** build: all pricing data (shelf prices, promotions, Clubcar
 
 - **Backend**: Go (chi router) + embedded SQLite, serving both the JSON API and the built frontend from a single binary.
 - **Frontend**: React + TypeScript + Vite, built as an installable PWA (`vite-plugin-pwa`).
-- **Deployment**: Helm chart (`charts/app`) + Jenkins (`homelabpipe` shared library), matching this homelab's house style.
+- **Deployment**: Helm chart (`charts/app`) + a self-contained Jenkinsfile (Kaniko build + Trivy scan + Helm deploy), modeled on `ebook-reader`'s proven pipeline.
 
 ## Local development
 
@@ -43,4 +43,4 @@ docker run -p 8080:8080 -v grocery-data:/data grocery-compare:local
 
 ## Deployment
 
-Deployed via Jenkins (`Jenkinsfile`, using the `homelabpipe` shared library) to the homelab's MicroK8s cluster, namespace `grocery-compare-ns`, at `grocery.atarnet.org`. See [docs/architecture.md](docs/architecture.md) for the one-time manual setup steps (GitHub repo, Jenkins job, DNS) and the hard constraint that this chart **must** stay at a single replica.
+Deployed via Jenkins (`Jenkinsfile`) to the homelab's MicroK8s cluster, namespace `grocery-compare-ns`, at `grocery.atarnet.org`. See [docs/architecture.md](docs/architecture.md) for the one-time manual setup steps (GitHub repo, Jenkins job, DNS) and the hard constraint that this chart **must** stay at a single replica.

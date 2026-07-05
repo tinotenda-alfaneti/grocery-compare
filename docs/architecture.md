@@ -50,10 +50,16 @@ See [DATA_MODEL.md](DATA_MODEL.md). The core idea: you maintain your own list of
 - **Phase 3 (roadmap, not built)**: session-based Clubcard/Rewards scraping. You'd log in once yourself in a real browser; the session cookie gets captured manually (DevTools → Application → Cookies) and stored as a Kubernetes Secret — never an automated login replay, and never your raw credentials. On any 401/403, the session is marked stale and the app falls back to the base/promo price; manual entry remains the permanent fallback.
 - **Never in scope**: automating anything against the employee gift-card discount site. It's behind corporate SSO — a different risk category from a retailer account — so that value is manual-entry-only, permanently.
 
+## CI/CD
+
+`Jenkinsfile` is a self-contained inline pipeline (Checkout → install kubectl/helm → verify cluster → prepare namespace/secrets → Kaniko build → Trivy scan → Helm deploy → verify), modeled directly on `ebook-reader`'s proven, currently-working Jenkinsfile. It deliberately does **not** use the `homelabpipe` shared library — that library exists as a repo in this homelab but isn't registered in Jenkins yet (Manage Jenkins → Global Pipeline Libraries), so depending on it would make this pipeline unable to run at all. Revisit switching to `@Library('homelabpipe') _` once that library is actually installed and proven on another repo first.
+
+The Kaniko/Trivy job manifests live in `ci/kubernetes/{kaniko.yaml,trivy.yaml}` as `__CONTEXT_URL__`/`__IMAGE_DEST__` templates, substituted by the Jenkinsfile at build time — same pattern as `ebook-reader`.
+
 ## One-time manual setup (not covered by code)
 
-- Create the GitHub repo as **public** (`buildWithKaniko` in the `homelabpipe` shared library clones over a plain unauthenticated HTTPS URL).
-- Wire a Jenkins multibranch job to it; confirm the `homelabpipe` library is registered under Manage Jenkins → Global Pipeline Libraries.
+- Create the GitHub repo as **public** (the pipeline clones over a plain unauthenticated `git://github.com/...` URL, same as `ebook-reader`).
+- Wire a Jenkins multibranch job to it.
 - Add the `grocery.atarnet.org` DNS record.
 - Confirm `dockerhub-creds` exists in `test-ns` for the namespace-copy step the pipeline performs.
 
