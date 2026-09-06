@@ -25,6 +25,10 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+    - host: grocery.alfaneti.uk
+      paths:
+        - path: /
+          pathType: Prefix
   tls: []
 
 resources: {}
